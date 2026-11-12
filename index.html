@@ -25,7 +25,6 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
 .fa-file-excel::before { content: '📊'; }
 .fa-cubes::before { content: '🧊'; }
 .fa-gift::before { content: '🎁'; }
-.fa-cloud-arrow-up::before { content: '☁️'; }
 .fa-layer-group::before { content: '🗂️'; }
 .fa-box-open::before { content: '📂'; }
 .fa-box::before { content: '📦'; }
@@ -45,6 +44,8 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
 .fa-location-dot::before { content: '📍'; }
 .fa-print::before { content: '🖨️'; }
 .fa-arrow-up-right-from-square::before { content: '↗️'; }
+.fa-tags::before { content: '🏷️'; }
+.fa-file-import::before { content: '📥'; }
 
 @media print {
   body * { visibility: hidden; }
@@ -76,19 +77,21 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
       <div class="w-12 h-12 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-md text-xl"><i class="fa-solid fa-boxes-stacked"></i></div>
       <div>
         <h1 class="text-xl font-bold text-gray-900 tracking-tight leading-tight">Sklad & Balíčky</h1>
-        <p class="text-xs text-gray-500 font-medium">Systém s podporou importu Excelu a odkazů na Alza.cz</p>
+        <p class="text-xs text-gray-500 font-medium">Správa skladu, hromadný import zásob/cen a tvorba balíčků</p>
       </div>
     </div>
-    <div class="flex items-center gap-3 flex-wrap">
-      <label for="excelFileInput" class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 shadow-sm">
-        <i class="fa-solid fa-file-excel"></i><span>Nahrát Excel s počty ks</span>
-        <input type="file" id="excelFileInput" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleFileUpload(event)">
-      </label>
-      <button onclick="switchTab('stock')" id="tabBtnStock" class="bg-brand-50 text-brand-700 border border-brand-200 px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+      <button onclick="switchTab('stock')" id="tabBtnStock" class="bg-brand-50 text-brand-700 border border-brand-200 px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
         <i class="fa-solid fa-cubes"></i><span>Skladová zásoba</span>
         <span id="badgeStockCount" class="bg-brand-200 text-brand-800 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
       </button>
-      <button onclick="switchTab('bundles')" id="tabBtnBundles" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+      <button onclick="switchTab('importStock')" id="tabBtnImportStock" class="bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-file-import"></i><span>Import skladu</span>
+      </button>
+      <button onclick="switchTab('pricing')" id="tabBtnPricing" class="bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+        <i class="fa-solid fa-tags"></i><span>Ceník (Import cen)</span>
+      </button>
+      <button onclick="switchTab('bundles')" id="tabBtnBundles" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
         <i class="fa-solid fa-gift"></i><span>Balíčky do <span id="badgeLimitPrice">500</span> Kč</span>
         <span id="badgeBundlesEst" class="bg-emerald-200 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-bold">~0</span>
       </button>
@@ -97,22 +100,6 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
 </header>
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-1 w-full">
-
-  <!-- DROP ZONE -->
-  <div id="dropZone" class="mb-6 bg-gradient-to-r from-brand-50 via-purple-50 to-brand-50 border-2 border-dashed border-brand-300 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:border-brand-500 no-print">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl shadow-sm border border-brand-100 flex-shrink-0"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-      <div>
-        <h3 class="text-sm font-bold text-gray-900">Aktualizujte sklad nahráním nového Excel souboru</h3>
-        <p class="text-xs text-gray-500 mt-0.5">Přetáhněte sem soubor (.xlsx, .xls nebo .csv) nebo klikněte na tlačítko vpravo.</p>
-        <p class="text-[11px] text-gray-400 mt-0.5">Sloupce: Produkt | Popis a SEO prefix | Lokace | Skladová cena | Na lokaci</p>
-      </div>
-    </div>
-    <label for="excelFileInputBanner" class="w-full sm:w-auto cursor-pointer text-center bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-5 py-2.5 rounded-xl shadow-sm transition-all">
-      Vybrat soubor z počítače
-      <input type="file" id="excelFileInputBanner" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleFileUpload(event)">
-    </label>
-  </div>
 
   <!-- KPI -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 no-print">
@@ -169,7 +156,63 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
       </div>
       <div id="emptyState" class="hidden py-12 text-center">
         <div class="text-4xl mb-3"><i class="fa-solid fa-box-open"></i></div>
-        <p class="text-gray-500 font-semibold">Žádné produkty neodpovídají zadaným kritériím.</p>
+        <p class="text-gray-500 font-semibold">Sklad je momentálně prázdný nebo žádné produkty neodpovídají filtru.</p>
+        <div class="mt-4 flex items-center justify-center gap-3 flex-wrap">
+          <button onclick="switchTab('importStock')" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-4 py-2 rounded-xl text-sm inline-flex items-center gap-2 transition-all"><i class="fa-solid fa-file-import"></i><span>Hromadně vložit sklad</span></button>
+          <button onclick="openAddProductModal()" class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2 rounded-xl text-sm inline-flex items-center gap-2 transition-all"><i class="fa-solid fa-plus"></i><span>Přidat produkt ručně</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZÁLOŽKA: HROMADNÝ IMPORT SKLADU -->
+  <div id="viewImportStock" class="hidden space-y-6">
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div class="pb-4 mb-4 border-b border-gray-100">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-file-import"></i> Hromadné vložení skladové zásoby</h2>
+        <p class="text-xs text-gray-500 mt-0.5">Zkopíruj data přímo z Excelu a vlož je níže. Pořadí sloupců na řádku: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-800 font-semibold">Produkt (kód) | Popis | Počet ks | Segment | Lokace</code></p>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Vložte tabulku ze schránky (odděleno tabulátorem nebo středníkem)</label>
+          <textarea id="stockInputText" rows="10" placeholder="BJ_GC_500B10	Cereálie Bery Jones 300g	15	Ořechy a vše ostatní	P2A-02-2-2a&#10;COFF_BEA_01	Výběrová káva 250g	12	Zrnková káva	P1B-01-1-1a" class="w-full font-mono text-xs p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sky-500 focus:bg-white transition-all"></textarea>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-gray-100">
+          <div class="flex items-center gap-4">
+            <label class="inline-flex items-center gap-2 text-sm text-gray-700 font-medium cursor-pointer">
+              <input type="radio" name="importMode" value="append" checked class="text-sky-600 focus:ring-sky-500">
+              <span>Přidat ke stávajícímu skladu</span>
+            </label>
+            <label class="inline-flex items-center gap-2 text-sm text-gray-700 font-medium cursor-pointer">
+              <input type="radio" name="importMode" value="replace" class="text-sky-600 focus:ring-sky-500">
+              <span>Přepsat celý sklad</span>
+            </label>
+          </div>
+          <button onclick="processStockImport()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"><i class="fa-solid fa-circle-check"></i><span>Vložit položky do skladu</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZÁLOŽKA: CENÍK (IMPORT CEN) -->
+  <div id="viewPricing" class="hidden space-y-6">
+    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div class="pb-4 mb-4 border-b border-gray-100">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2"><i class="fa-solid fa-tags"></i> Hromadný import / vložení cen</h2>
+        <p class="text-xs text-gray-500 mt-0.5">Sem vlož kódy produktů a jejich nové ceny (např. zkopírované ze sloupce Excelu). Formát řádku: <code class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-800 font-semibold">Produkt (kód) | Cena</code></p>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Vložte data (Kód produktu & Cena)</label>
+          <textarea id="pricingInputText" rows="10" placeholder="BJ_GC_500B10	47.23&#10;COFF_BEA_01	145.00&#10;CAPS_NESP_10	89.90" class="w-full font-mono text-xs p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 focus:bg-white transition-all"></textarea>
+        </div>
+        <div class="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-gray-100">
+          <p class="text-xs text-gray-400">Aplikace automaticky spáruje kódy a aktualizuje jednotkové ceny u položek ve skladu.</p>
+          <button onclick="processPricingImport()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-sm transition-all flex items-center gap-2"><i class="fa-solid fa-circle-check"></i><span>Aktualizovat ceny ve skladu</span></button>
+        </div>
       </div>
     </div>
   </div>
@@ -201,12 +244,11 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
           </div>
         </div>
         <div>
-          <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Max. ks od produktu</label>
+          <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Max. ks od produktu <span class="text-[10px] text-gray-400 font-normal lowercase">(0 = bez omezení)</span></label>
           <div class="relative">
-            <input type="number" id="bundleMaxPerProduct" value="0" min="0" step="1" placeholder="0 = bez omezení" class="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-brand-500">
+            <input type="number" id="bundleMaxPerProduct" value="0" min="0" step="1" placeholder="0" class="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-brand-500">
             <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-sm">ks</span>
           </div>
-          <p class="text-[10px] text-gray-400 mt-1">0 = bez omezení</p>
         </div>
         <button onclick="generateBundles()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"><i class="fa-solid fa-calculator"></i><span>Sestavit balíčky</span></button>
       </div>
@@ -237,8 +279,8 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
           <input type="text" id="formLocation" placeholder="P2A-02-2-2a" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="block text-xs font-bold text-gray-600 mb-1">Jednotková cena (Kč) *</label>
-          <input type="number" step="0.01" id="formPrice" required placeholder="47.23" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
+        <div><label class="block text-xs font-bold text-gray-600 mb-1">Jednotková cena (Kč)</label>
+          <input type="number" step="0.01" id="formPrice" value="0" placeholder="47.23" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
         <div><label class="block text-xs font-bold text-gray-600 mb-1">Počet kusů skladem *</label>
           <input type="number" id="formStock" required min="0" placeholder="10" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
       </div>
@@ -256,7 +298,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
 </div>
 
 <script>
-const STORAGE_KEY = 'sklad_balicky_data_v14';
+const STORAGE_KEY = 'sklad_balicky_data_clean_v1';
 
 const SEGMENTS = [
   'Zrnková káva',
@@ -267,20 +309,12 @@ const SEGMENTS = [
 ];
 const MAX_BUNDLES = 50;
 
-// Ukázková data pro případ, že uživatel klikne na "Obnovit vzor"
 const SAMPLE_PRODUCTS = [
-  { id: "1", code: "BJ_GC_500B10", name: "Cereálie Bery Jones Křehké ovesné polštářky bezlepkové 300g", location: "P2A-02-2-2a", expiration: "01.08.2027", price: 47.23, stock: 2, segment: "Ořechy a vše ostatní" },
-  { id: "2", code: "BJ_GC_500B10", name: "Cereálie Bery Jones Křehké ovesné polštářky bezlepkové 300g", location: "P2A-02-3-2a", expiration: "30.10.2026", price: 47.23, stock: 59, segment: "Ořechy a vše ostatní" },
-  { id: "3", code: "BJ_GC_500B10", name: "Cereálie Bery Jones Křehké ovesné polštářky bezlepkové 300g", location: "P2A-02-4-2a", expiration: "29.10.2026", price: 47.23, stock: 8, segment: "Ořechy a vše ostatní" },
-  { id: "4", code: "BJ_GC_500B09", name: "Cereálie Bery Jones Křehké polštářky s čokoládovou náplní 500g", location: "P2A-02-1-3a", expiration: "01.09.2027", price: 51.26, stock: 2, segment: "Ořechy a vše ostatní" },
-  { id: "5", code: "BJ_GC_500B09", name: "Cereálie Bery Jones Křehké polštářky s čokoládovou náplní 500g", location: "P2A-02-2-2a", expiration: "29.10.2026", price: 51.26, stock: 6, segment: "Ořechy a vše ostatní" },
-  { id: "6", code: "BJ_GC_500B09", name: "Cereálie Bery Jones Křehké polštářky s čokoládovou náplní 500g", location: "P2A-02-4-1a", expiration: "29.10.2026", price: 51.26, stock: 4, segment: "Ořechy a vše ostatní" },
-  { id: "7", code: "BJ_GC_500B09", name: "Cereálie Bery Jones Křehké polštářky s čokoládovou náplní 500g", location: "P2A-02-4-2a", expiration: "29.10.2026", price: 51.26, stock: 1, segment: "Ořechy a vše ostatní" },
-  { id: "8", code: "SPTMix297", name: "Cereální tyčinka Mixit Action BIO Adama Ondry - Sezam & pistácie", location: "P2A-02-2-3a", expiration: "29.10.2026", price: 19.94, stock: 2, segment: "Proteinové tyčinky a další proteinové věci" },
-  { id: "9", code: "COFF_BEA_01", name: "Výběrová zrnková káva Brazil Mogiana 250g 100% Arabica", location: "P1B-01-1-1a", expiration: "15.04.2025", price: 145.00, stock: 12, segment: "Zrnková káva" },
-  { id: "10", code: "CAPS_NESP_10", name: "Kávové kapsle Nespresso kompatibilní Espresso Intenso (10ks)", location: "P1B-01-2-1b", expiration: "20.12.2025", price: 89.90, stock: 24, segment: "Kapsle" },
-  { id: "11", code: "NUTS_ALM_500", name: "Bery Jones Mandle pražené jemně solené 500g", location: "P2A-03-1-1a", expiration: "10.05.2026", price: 129.00, stock: 15, segment: "Ořechy a vše ostatní" },
-  { id: "12", code: "PROT_BAR_CHO", name: "Proteinová tyčinka Bombus Raw Protein Chocolate 50g", location: "P2A-02-1-1a", expiration: "18.08.2026", price: 29.50, stock: 35, segment: "Proteinové tyčinky a další proteinové věci" }
+  { id: "1", code: "BJ_GC_500B10", name: "Cereálie Bery Jones Křehké ovesné polštářky bezlepkové 300g", location: "P2A-02-2-2a", price: 47.23, stock: 15, segment: "Ořechy a vše ostatní" },
+  { id: "2", code: "COFF_BEA_01", name: "Výběrová zrnková káva Brazil Mogiana 250g 100% Arabica", location: "P1B-01-1-1a", price: 145.00, stock: 12, segment: "Zrnková káva" },
+  { id: "3", code: "CAPS_NESP_10", name: "Kávové kapsle Nespresso kompatibilní Espresso Intenso (10ks)", location: "P1B-01-2-1b", price: 89.90, stock: 24, segment: "Kapsle" },
+  { id: "4", code: "NUTS_ALM_500", name: "Bery Jones Mandle pražené jemně solené 500g", location: "P2A-03-1-1a", price: 129.00, stock: 15, segment: "Ořechy a vše ostatní" },
+  { id: "5", code: "PROT_BAR_CHO", name: "Proteinová tyčinka Bombus Raw Protein Chocolate 50g", location: "P2A-02-1-1a", price: 29.50, stock: 35, segment: "Proteinové tyčinky a další proteinové věci" }
 ];
 
 const PRICE_PERCENT = 40;
@@ -297,13 +331,13 @@ function loadProductsFromStorage() {
   if (stored) {
     try { products = JSON.parse(stored); if (!Array.isArray(products)) throw 0; return; } catch (e) {}
   }
-  // Při prvotním otevření je sklad prázdný (dříve zde byly ukázkové položky)
+  // Při prvním otevření necháme sklad úplně prázdný bez dat
   products = [];
   saveToStorage();
 }
 
 function resetToSampleData() {
-  if (confirm("Chcete načíst ukázková vzorová data?")) {
+  if (confirm("Chcete načíst ukázková vzorová data skladu?")) {
     products = JSON.parse(JSON.stringify(SAMPLE_PRODUCTS));
     saveToStorage(); renderTable(); showToast("Ukázková data byla načtena");
   }
@@ -312,7 +346,6 @@ function resetToSampleData() {
 document.addEventListener('DOMContentLoaded', () => {
   fillSegmentSelects();
   loadProductsFromStorage();
-  setupDragAndDrop();
   renderTable();
   updateLimitBadges();
 });
@@ -326,14 +359,27 @@ function fillSegmentSelects() {
 
 function switchTab(tab) {
   const btnStock = document.getElementById('tabBtnStock');
+  const btnImportStock = document.getElementById('tabBtnImportStock');
+  const btnPricing = document.getElementById('tabBtnPricing');
   const btnBundles = document.getElementById('tabBtnBundles');
-  const base = "px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all ";
+  const base = "px-3.5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all ";
+  
   const isStock = tab === 'stock';
+  const isImportStock = tab === 'importStock';
+  const isPricing = tab === 'pricing';
+  const isBundles = tab === 'bundles';
+
   document.getElementById('viewStock').classList.toggle('hidden', !isStock);
-  document.getElementById('viewBundles').classList.toggle('hidden', isStock);
+  document.getElementById('viewImportStock').classList.toggle('hidden', !isImportStock);
+  document.getElementById('viewPricing').classList.toggle('hidden', !isPricing);
+  document.getElementById('viewBundles').classList.toggle('hidden', !isBundles);
+
   btnStock.className = base + (isStock ? "bg-brand-100 text-brand-800 border border-brand-300" : "bg-brand-50 text-brand-700 border border-brand-200 hover:bg-brand-100 opacity-80");
-  btnBundles.className = base + (!isStock ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 opacity-80");
-  if (!isStock) generateBundles();
+  btnImportStock.className = base + (isImportStock ? "bg-sky-100 text-sky-800 border border-sky-300" : "bg-sky-50 text-sky-700 border border-sky-200 hover:bg-sky-100 opacity-80");
+  btnPricing.className = base + (isPricing ? "bg-amber-100 text-amber-800 border border-amber-300" : "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 opacity-80");
+  btnBundles.className = base + (isBundles ? "bg-emerald-100 text-emerald-800 border border-emerald-300" : "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 opacity-80");
+
+  if (isBundles) generateBundles();
 }
 
 function renderTable() {
@@ -384,7 +430,6 @@ function renderTable() {
       </td>
       <td class="py-3 px-4"><span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">${escapeHtml(p.location || 'Není')}</span></td>
       
-      <!-- Editovatelná jednotková cena přímo v tabulce -->
       <td class="py-3 px-4 text-right">
         <input type="number" step="0.01" value="${p.price}" onchange="updatePriceInline('${p.id}', this.value)" class="w-24 text-right bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-sm font-semibold text-gray-800 focus:outline-none focus:border-brand-500 focus:bg-white transition-all">
       </td>
@@ -402,7 +447,7 @@ function renderTable() {
       <td class="py-3 px-4 text-center no-print">
         <div class="flex items-center justify-center gap-2">
           <a href="${alzaLink}" target="_blank" rel="noopener" title="Otevřít produkt na Alza.cz" class="p-1.5 hover:bg-emerald-50 text-emerald-700 rounded-lg transition-all"><i class="fa-solid fa-cart-shopping"></i></a>
-          <button onclick="deleteProduct('${p.id}')" title="Smazat položku" class="p-1.5 hover:bg-red-50 rounded-lg transition-all"><i class="fa-solid fa-trash-can"></i></button>
+          <button onclick="deleteProduct('${p.id}')" title="Smazat položku" class="p-1.5 hover:bg-red-50 text-red-600 rounded-lg transition-all"><i class="fa-solid fa-trash-can"></i></button>
         </div>
       </td>`;
     tbody.appendChild(tr);
@@ -459,6 +504,124 @@ function saveProduct(e) {
   showToast("Produkt byl přidán do skladu");
 }
 
+/* NORMALIZACE SEGMENTU */
+const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
+function matchOrGuessSegment(rawSegment, productName) {
+  const exact = SEGMENTS.find(s => norm(s) === norm(rawSegment));
+  if (exact) return exact;
+  
+  const t = norm(rawSegment + ' ' + productName);
+  if (t.includes('napoj') || t.includes('drink') || t.includes('sirup') || t.includes('mleko') || t.includes('mliko') || t.includes('dzus') || t.includes('water')) {
+    return 'Nápoje a mléka apod.';
+  }
+  if (t.includes('kapsl')) return 'Kapsle';
+  if (t.includes('zrnk') || t.includes('kava') || t.includes('coffee')) return 'Zrnková káva';
+  if (t.includes('protein') || t.includes('tycin') || t.includes('bar') || t.includes('kreatin') || t.includes('shaker')) {
+    return 'Proteinové tyčinky a další proteinové věci';
+  }
+  return 'Ořechy a vše ostatní';
+}
+
+function processStockImport() {
+  const text = document.getElementById('stockInputText').value.trim();
+  if (!text) {
+    alert("Vložte prosím data skladových zásob.");
+    return;
+  }
+
+  const mode = document.querySelector('input[name="importMode"]:checked').value;
+  const lines = text.split('\n');
+  const imported = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    const parts = line.includes('\t') ? line.split('\t') : line.split(';');
+    if (parts.length < 2) continue;
+
+    const code = (parts[0] || '').trim();
+    const name = (parts[1] || '').trim();
+    const rawStock = (parts[2] || '0').trim().replace(/\s/g, '').replace(/[^0-9\-]/g, '');
+    const rawSegment = (parts[3] || '').trim();
+    const location = (parts[4] || '').trim();
+
+    if (!code && !name) continue;
+    if (norm(code) === 'produkt' && norm(name).includes('popis')) continue;
+
+    imported.push({
+      id: (Date.now() + i).toString(),
+      code: code || `KOD-${i + 1}`,
+      name: name || 'Neznámý produkt',
+      stock: parseInt(rawStock) || 0,
+      segment: matchOrGuessSegment(rawSegment, name),
+      location: location,
+      price: 0
+    });
+  }
+
+  if (imported.length === 0) {
+    alert("Nepodařilo se rozpoznat žádné platné řádky. Zkontrolujte pořadí sloupců: Produkt | Popis | Počet ks | Segment | Lokace");
+    return;
+  }
+
+  if (mode === 'replace') {
+    products = imported;
+  } else {
+    products = [...imported, ...products];
+  }
+
+  saveToStorage();
+  renderTable();
+  document.getElementById('stockInputText').value = '';
+  showToast(`Úspěšně vloženo ${imported.length} položek do skladu`);
+  switchTab('stock');
+}
+
+function processPricingImport() {
+  const text = document.getElementById('pricingInputText').value.trim();
+  if (!text) {
+    alert("Vložte prosím data ceníku.");
+    return;
+  }
+
+  const lines = text.split('\n');
+  let updatedCount = 0;
+  const priceMap = new Map();
+
+  for (const line of lines) {
+    const parts = line.split(/[\t,;]+/);
+    if (parts.length >= 2) {
+      const code = parts[0].trim();
+      const rawPrice = parts[1].trim().replace(/\s/g, '').replace(/[^0-9,.\-]/g, '').replace(',', '.');
+      const price = parseFloat(rawPrice);
+      if (code && !isNaN(price)) {
+        priceMap.set(code.toLowerCase(), price);
+      }
+    }
+  }
+
+  if (priceMap.size === 0) {
+    alert("Nepodařilo se rozpoznat žádné platné řádky s kódem a cenou. Zkontrolujte formát.");
+    return;
+  }
+
+  products.forEach(p => {
+    const c = (p.code || '').trim().toLowerCase();
+    if (priceMap.has(c)) {
+      p.price = priceMap.get(c);
+      updatedCount++;
+    }
+  });
+
+  saveToStorage();
+  renderTable();
+  document.getElementById('pricingInputText').value = '';
+  showToast(`Úspěšně aktualizováno cen pro ${updatedCount} produktů`);
+  switchTab('stock');
+}
+
 function updateLimitBadges() {
   const limit = document.getElementById('bundlePriceLimit').value || 500;
   document.getElementById('badgeLimitPrice').innerText = limit;
@@ -489,7 +652,6 @@ function generateBundles() {
   }
 
   const bundles = [];
-  let skipped = false;
   let counter = 1;
   while (true) {
     const items = [];
@@ -505,7 +667,7 @@ function generateBundles() {
       }
     }
     if (!added || items.length === 0) break;
-    if (price + 1e-9 < minValue) { skipped = true; break; }
+    if (price + 1e-9 < minValue) break;
     bundles.push({ id: counter++, items, totalPrice: price, remainingBudget: limit - price });
     if (counter > MAX_BUNDLES) break;
   }
@@ -616,102 +778,6 @@ function exportAllBundlesExcel() {
   showToast("Všechny balíčky byly exportovány do Excelu");
 }
 
-/* AUTOMATICKÉ MAPOVÁNÍ SLOUPCŮ */
-const COLUMN_KEYWORDS = {
-  code: ['produkt'],
-  name: ['popis', 'seo', 'prefix', 'nazev'],
-  location: ['lokace', 'pozice', 'umisteni', 'misto'],
-  price: ['skladova cena', 'cena', 'price', 'kc'],
-  stock: ['na lokaci', 'skladem', 'mnozstvi', 'pocet', 'ks', 'zasoba']
-};
-const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-
-function parseNumber(v) {
-  if (typeof v === 'number') return v;
-  const s = String(v ?? '').replace(/\s/g, '').replace(/[^0-9,.\-]/g, '').replace(',', '.');
-  return parseFloat(s) || 0;
-}
-
-function guessSegment(text, raw) {
-  const exact = SEGMENTS.find(s => norm(s) === norm(raw));
-  if (exact) return exact;
-  const t = norm(text + ' ' + raw);
-  
-  if (t.includes('napoj') || t.includes('drink') || t.includes('sirup') || t.includes('mleko') || t.includes('mliko') || t.includes('džus') || t.includes('dzus') || t.includes('water') || t.includes('bcaa drink')) {
-    return 'Nápoje a mléka apod.';
-  }
-  if (t.includes('kapsl')) return 'Kapsle';
-  if (t.includes('zrnk') || t.includes('kava') || t.includes('coffee')) return 'Zrnková káva';
-  if (t.includes('protein') || t.includes('tycin') || t.includes('bar') || t.includes('kreatin') || t.includes('shaker')) {
-    return 'Proteinové tyčinky a další proteinové věci';
-  }
-  return 'Ořechy a vše ostatní';
-}
-
-function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-      if (rows.length < 2) { alert("Soubor neobsahuje platná data."); return; }
-
-      let headerRow = 0;
-      let map = {};
-      for (let h = 0; h < Math.min(rows.length, 10); h++) {
-        const heads = (rows[h] || []).map(norm);
-        const tempMap = {};
-        const used = new Set();
-        for (const field of Object.keys(COLUMN_KEYWORDS)) {
-          let idx = heads.findIndex((t, i) => !used.has(i) && t && COLUMN_KEYWORDS[field].some(k => t.includes(k)));
-          if (idx !== -1) { tempMap[field] = idx; used.add(idx); }
-        }
-        if (Object.keys(tempMap).length >= 2) {
-          headerRow = h;
-          map = tempMap;
-          break;
-        }
-      }
-
-      if (Object.keys(map).length === 0) {
-        map = { code: 0, name: 1, location: 2, price: 3, stock: 4 };
-      }
-
-      const cell = (r, f) => (map[f] !== undefined ? r[map[f]] : undefined);
-      const imported = [];
-      for (let i = headerRow + 1; i < rows.length; i++) {
-        const r = rows[i];
-        if (!r || r.length === 0) continue;
-        const code = String(cell(r, 'code') ?? '').trim();
-        const name = String(cell(r, 'name') ?? '').trim();
-        if (!code && !name) continue;
-        imported.push({
-          id: (Date.now() + i).toString(),
-          code: code || `KOD-${i}`,
-          name: name || 'Neznámý produkt',
-          location: String(cell(r, 'location') ?? '').trim(),
-          price: parseNumber(cell(r, 'price')),
-          stock: Math.round(parseNumber(cell(r, 'stock'))),
-          segment: guessSegment(name, '')
-        });
-      }
-
-      if (imported.length > 0) {
-        products = imported;
-        saveToStorage();
-        renderTable();
-        showToast(`Úspěšně importováno ${imported.length} položek`);
-      } else {
-        alert('V souboru nebyla nalezena žádná platná data k importu.');
-      }
-    } catch (err) { alert("Chyba při čtení souboru: " + err.message); }
-  };
-  reader.readAsArrayBuffer(file);
-  if (event.target && 'value' in event.target) event.target.value = '';
-}
-
 function exportToExcel() {
   const data = products.map(p => ({ 'Produkt': p.code, 'Popis a SEO prefix': p.name, 'Lokace': p.location, 'Skladová cena': p.price, [`Cena ${PRICE_PERCENT} %`]: adjPrice(p), 'Na lokaci': p.stock, 'Segment': p.segment }));
   const ws = XLSX.utils.json_to_sheet(data);
@@ -719,12 +785,6 @@ function exportToExcel() {
   XLSX.utils.book_append_sheet(wb, ws, "Sklad");
   XLSX.writeFile(wb, "Sklad_Zasoby.xlsx");
   showToast("Export proběhl úspěšně");
-}
-
-function setupDragAndDrop() {
-  const dz = document.getElementById('dropZone');
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(n => dz.addEventListener(n, ev => { ev.preventDefault(); ev.stopPropagation(); }));
-  dz.addEventListener('drop', e => { if (e.dataTransfer.files.length) handleFileUpload({ target: { files: e.dataTransfer.files } }); });
 }
 
 function showToast(msg) {
