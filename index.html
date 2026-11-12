@@ -125,13 +125,13 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
   <div id="viewStock" class="space-y-4">
     <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-3 items-center justify-between no-print">
       <div class="relative w-full md:w-96">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-sm"></i>
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
         <input type="text" id="searchInput" oninput="renderTable()" placeholder="Hledat podle kódu, názvu nebo lokace..." class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-brand-500 focus:bg-white transition-all">
       </div>
       <div class="flex items-center gap-2 w-full md:w-auto flex-wrap sm:flex-nowrap">
         <select id="segmentFilter" onchange="renderTable()" class="w-full sm:w-auto bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 font-medium"></select>
         <button onclick="openAddProductModal()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-semibold px-4 py-2.5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm transition-all"><i class="fa-solid fa-plus"></i><span>Přidat produkt</span></button>
-        <button onclick="resetToSampleData()" title="Smazat veškeré produkty a obnovit zásobu" class="p-2.5 border border-gray-200 hover:bg-gray-50 rounded-xl text-gray-600 text-sm transition-all flex items-center justify-center gap-1 font-medium"><i class="fa-solid fa-rotate-left"></i><span>Obnovit zásobu</span></button>
+        <button onclick="resetToSampleData()" title="Smazat veškeré produkty a vyčistit zásobu" class="p-2.5 border border-gray-200 hover:bg-gray-50 rounded-xl text-gray-600 text-sm transition-all flex items-center justify-center gap-1 font-medium"><i class="fa-solid fa-rotate-left"></i><span>Vyčistit sklad</span></button>
         <button onclick="exportToExcel()" title="Exportovat aktuální stav do Excelu" class="p-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-sm transition-all flex items-center justify-center gap-1 font-semibold"><i class="fa-solid fa-file-export"></i><span>Export</span></button>
       </div>
     </div>
@@ -176,7 +176,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Vložte tabulku ze schránky (odděleno tabulátorem nebo středníkem)</label>
-          <textarea id="stockInputText" rows="10" placeholder="BJ_GC_500B10	Cereálie Bery Jones 300g	15	Ořechy a vše ostatní	P2A-02-2-2a&#10;COFF_BEA_01	Výběrová káva 250g	12	Zrnková káva	P1B-01-1-1a" class="w-full font-mono text-xs p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sky-500 focus:bg-white transition-all"></textarea>
+          <textarea id="stockInputText" rows="10" placeholder="Zadejte data ve formátu: Kód \t Název \t Počet \t Segment \t Lokace" class="w-full font-mono text-xs p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-sky-500 focus:bg-white transition-all"></textarea>
         </div>
 
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t border-gray-100">
@@ -207,7 +207,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Vložte data (Kód produktu & Cena)</label>
-          <textarea id="pricingInputText" rows="10" placeholder="BJ_GC_500B10	47.23&#10;COFF_BEA_01	145.00&#10;CAPS_NESP_10	89.90" class="w-full font-mono text-xs p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 focus:bg-white transition-all"></textarea>
+          <textarea id="pricingInputText" rows="10" placeholder="Zadejte kód a cenu oddělenou tabulátorem" class="w-full font-mono text-xs p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-500 focus:bg-white transition-all"></textarea>
         </div>
         <div class="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-gray-100">
           <p class="text-xs text-gray-400">Aplikace automaticky spáruje kódy a aktualizuje jednotkové ceny u položek ve skladu.</p>
@@ -268,19 +268,19 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
       <input type="hidden" id="editProductId">
       <div class="grid grid-cols-2 gap-4">
         <div><label class="block text-xs font-bold text-gray-600 mb-1">Kód produktu *</label>
-          <input type="text" id="formCode" required placeholder="např. BJ_GC_500B10" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
+          <input type="text" id="formCode" required placeholder="např. PROD_01" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
         <div><label class="block text-xs font-bold text-gray-600 mb-1">Segment</label>
           <select id="formSegment" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></select></div>
       </div>
       <div><label class="block text-xs font-bold text-gray-600 mb-1">Název & Popis produktu *</label>
-        <input type="text" id="formName" required placeholder="např. Cereálie Bery Jones..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
+        <input type="text" id="formName" required placeholder="např. Název položky..." class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
       <div class="grid grid-cols-2 gap-4">
         <div><label class="block text-xs font-bold text-gray-600 mb-1">Lokace ve skladu</label>
-          <input type="text" id="formLocation" placeholder="P2A-02-2-2a" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
+          <input type="text" id="formLocation" placeholder="A1-01-1" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
       </div>
       <div class="grid grid-cols-2 gap-4">
         <div><label class="block text-xs font-bold text-gray-600 mb-1">Jednotková cena (Kč)</label>
-          <input type="number" step="0.01" id="formPrice" value="0" placeholder="47.23" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
+          <input type="number" step="0.01" id="formPrice" value="0" placeholder="0.00" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
         <div><label class="block text-xs font-bold text-gray-600 mb-1">Počet kusů skladem *</label>
           <input type="number" id="formStock" required min="0" placeholder="10" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-500"></div>
       </div>
@@ -298,7 +298,7 @@ body { font-family: 'Inter', system-ui, sans-serif; background-color: #f8fafc; c
 </div>
 
 <script>
-const STORAGE_KEY = 'sklad_balicky_data_clean_v1';
+const STORAGE_KEY = 'sklad_balicky_data_clean_empty_v1';
 
 const SEGMENTS = [
   'Zrnková káva',
@@ -308,7 +308,6 @@ const SEGMENTS = [
   'Ořechy a vše ostatní'
 ];
 const MAX_BUNDLES = 50;
-
 const PRICE_PERCENT = 40;
 const adjPrice = p => Math.round((Number(p.price) || 0) * PRICE_PERCENT) / 100;
 
@@ -323,16 +322,16 @@ function loadProductsFromStorage() {
   if (stored) {
     try { products = JSON.parse(stored); if (!Array.isArray(products)) throw 0; return; } catch (e) {}
   }
-  products = [];
+  products = []; // Začíná kompletně prázdné
   saveToStorage();
 }
 
 function resetToSampleData() {
-  if (confirm("Opravdu chcete smazat veškeré produkty a vyčistit zásobu?")) {
+  if (confirm("Opravdu chcete vyčistit celý sklad?")) {
     products = [];
     saveToStorage(); 
     renderTable(); 
-    showToast("Zásoba byla kompletně smazána");
+    showToast("Sklad byl vyčištěn");
   }
 }
 
@@ -378,8 +377,10 @@ function switchTab(tab) {
 function renderTable() {
   const tbody = document.getElementById('productTableBody');
   const emptyState = document.getElementById('emptyState');
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  const segment = document.getElementById('segmentFilter').value;
+  const searchInputEl = document.getElementById('searchInput');
+  const q = searchInputEl ? searchInputEl.value.trim().toLowerCase() : '';
+  const segmentEl = document.getElementById('segmentFilter');
+  const segment = segmentEl ? segmentEl.value : 'ALL';
 
   const filtered = products.filter(p => {
     const s = (p.code || '').toLowerCase().includes(q) || (p.name || '').toLowerCase().includes(q) || (p.location || '').toLowerCase().includes(q);
@@ -389,7 +390,8 @@ function renderTable() {
   const uniqueCodes = new Set(products.map(p => p.code)).size;
   const totalPieces = products.reduce((a, p) => a + (Number(p.stock) || 0), 0);
   const totalVal = products.reduce((a, p) => a + (Number(p.stock) || 0) * (Number(p.price) || 0), 0);
-  const limit = parseFloat(document.getElementById('bundlePriceLimit').value || 500);
+  const limitInput = document.getElementById('bundlePriceLimit');
+  const limit = parseFloat(limitInput ? limitInput.value : 500) || 500;
   const totalAdj = products.reduce((a, p) => a + (Number(p.stock) || 0) * adjPrice(p), 0);
   const est = limit > 0 ? Math.floor(totalAdj / limit) : 0;
 
@@ -484,299 +486,217 @@ function closeProductModal() { showModal(false); }
 
 function saveProduct(e) {
   e.preventDefault();
-  const data = {
-    code: document.getElementById('formCode').value.trim(),
-    name: document.getElementById('formName').value.trim(),
-    segment: document.getElementById('formSegment').value,
-    location: document.getElementById('formLocation').value.trim(),
-    price: parseFloat(document.getElementById('formPrice').value) || 0,
-    stock: parseInt(document.getElementById('formStock').value) || 0
-  };
-  products.unshift({ id: Date.now().toString(), ...data });
-  saveToStorage(); closeProductModal(); renderTable();
-  showToast("Produkt byl přidán do skladu");
-}
+  const editId = document.getElementById('editProductId').value;
+  const code = document.getElementById('formCode').value.trim();
+  const name = document.getElementById('formName').value.trim();
+  const segment = document.getElementById('formSegment').value;
+  const location = document.getElementById('formLocation').value.trim();
+  const price = parseFloat(document.getElementById('formPrice').value) || 0;
+  const stock = parseInt(document.getElementById('formStock').value) || 0;
 
-/* NORMALIZACE SEGMENTU */
-const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  if (editId) {
+    const p = products.find(i => i.id === editId);
+    if (p) { p.code = code; p.name = name; p.segment = segment; p.location = location; p.price = price; p.stock = stock; }
+  } else {
+    products.push({ id: 'p_' + Math.random().toString(36).substring(2, 9), code, name, segment, location, price, stock });
+  }
 
-function matchOrGuessSegment(rawSegment, productName) {
-  const exact = SEGMENTS.find(s => norm(s) === norm(rawSegment));
-  if (exact) return exact;
-  
-  const t = norm(rawSegment + ' ' + productName);
-  if (t.includes('napoj') || t.includes('drink') || t.includes('sirup') || t.includes('mleko') || t.includes('mliko') || t.includes('dzus') || t.includes('water')) {
-    return 'Nápoje a mléka apod.';
-  }
-  if (t.includes('kapsl')) return 'Kapsle';
-  if (t.includes('zrnk') || t.includes('kava') || t.includes('coffee')) return 'Zrnková káva';
-  if (t.includes('protein') || t.includes('tycin') || t.includes('bar') || t.includes('kreatin') || t.includes('shaker')) {
-    return 'Proteinové tyčinky a další proteinové věci';
-  }
-  return 'Ořechy a vše ostatní';
+  saveToStorage();
+  closeProductModal();
+  renderTable();
+  showToast("Produkt byl úspěšně uložen");
 }
 
 function processStockImport() {
   const text = document.getElementById('stockInputText').value.trim();
-  if (!text) {
-    alert("Vložte prosím data skladových zásob.");
-    return;
-  }
-
+  if (!text) { alert("Vložte prosím nějaká data."); return; }
   const mode = document.querySelector('input[name="importMode"]:checked').value;
   const lines = text.split('\n');
-  const imported = [];
+  let added = 0;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
+  const newItems = [];
+  for (let line of lines) {
+    const cols = line.split('\t');
+    if (cols.length < 3) continue;
+    const code = cols[0].trim();
+    const name = cols[1].trim();
+    const stock = parseInt(cols[2]) || 0;
+    const segment = cols[3] && SEGMENTS.includes(cols[3].trim()) ? cols[3].trim() : SEGMENTS[0];
+    const location = cols[4] ? cols[4].trim() : '';
+    if (!code || !name) continue;
 
-    const parts = line.includes('\t') ? line.split('\t') : line.split(';');
-    if (parts.length < 2) continue;
-
-    const code = (parts[0] || '').trim();
-    const name = (parts[1] || '').trim();
-    const rawStock = (parts[2] || '0').trim().replace(/\s/g, '').replace(/[^0-9\-]/g, '');
-    const rawSegment = (parts[3] || '').trim();
-    const location = (parts[4] || '').trim();
-
-    if (!code && !name) continue;
-    if (norm(code) === 'produkt' && norm(name).includes('popis')) continue;
-
-    imported.push({
-      id: (Date.now() + i).toString(),
-      code: code || `KOD-${i + 1}`,
-      name: name || 'Neznámý produkt',
-      stock: parseInt(rawStock) || 0,
-      segment: matchOrGuessSegment(rawSegment, name),
-      location: location,
-      price: 0
+    newItems.push({
+      id: 'p_' + Math.random().toString(36).substring(2, 9),
+      code, name, segment, location, price: 0, stock
     });
+    added++;
   }
 
-  if (imported.length === 0) {
-    alert("Nepodařilo se rozpoznat žádné platné řádky. Zkontrolujte pořadí sloupců: Produkt | Popis | Počet ks | Segment | Lokace");
-    return;
-  }
+  if (added === 0) { alert("Nepodařilo se zpracovat žádné řádky. Zkontrolujte formát."); return; }
 
   if (mode === 'replace') {
-    products = imported;
+    products = newItems;
   } else {
-    products = [...imported, ...products];
+    products = products.concat(newItems);
   }
 
   saveToStorage();
   renderTable();
-  document.getElementById('stockInputText').value = '';
-  showToast(`Úspěšně vloženo ${imported.length} položek do skladu`);
   switchTab('stock');
+  showToast(`Úspěšně importováno ${added} položek`);
 }
 
 function processPricingImport() {
   const text = document.getElementById('pricingInputText').value.trim();
-  if (!text) {
-    alert("Vložte prosím data ceníku.");
-    return;
-  }
-
+  if (!text) { alert("Vložte prosím ceníková data."); return; }
   const lines = text.split('\n');
-  let updatedCount = 0;
-  const priceMap = new Map();
+  let updated = 0;
 
-  for (const line of lines) {
-    const parts = line.split(/[\t,;]+/);
-    if (parts.length >= 2) {
-      const code = parts[0].trim();
-      const rawPrice = parts[1].trim().replace(/\s/g, '').replace(/[^0-9,.\-]/g, '').replace(',', '.');
-      const price = parseFloat(rawPrice);
-      if (code && !isNaN(price)) {
-        priceMap.set(code.toLowerCase(), price);
-      }
+  for (let line of lines) {
+    const cols = line.split('\t');
+    if (cols.length < 2) continue;
+    const code = cols[0].trim();
+    const price = parseFloat(cols[1].replace(/\s/g, '').replace(',', '.')) || 0;
+    
+    const p = products.find(i => i.code.toLowerCase() === code.toLowerCase());
+    if (p) {
+      p.price = price;
+      updated++;
     }
   }
-
-  if (priceMap.size === 0) {
-    alert("Nepodařilo se rozpoznat žádné platné řádky s kódem a cenou. Zkontrolujte formát.");
-    return;
-  }
-
-  products.forEach(p => {
-    const c = (p.code || '').trim().toLowerCase();
-    if (priceMap.has(c)) {
-      p.price = priceMap.get(c);
-      updatedCount++;
-    }
-  });
 
   saveToStorage();
   renderTable();
-  document.getElementById('pricingInputText').value = '';
-  showToast(`Úspěšně aktualizováno cen pro ${updatedCount} produktů`);
   switchTab('stock');
+  showToast(`Aktualizováno cen pro ${updated} položek`);
 }
 
 function updateLimitBadges() {
-  const limit = document.getElementById('bundlePriceLimit').value || 500;
-  document.getElementById('badgeLimitPrice').innerText = limit;
-  document.querySelectorAll('.limitValText').forEach(el => el.innerText = limit);
-  renderTable();
+  const val = document.getElementById('bundlePriceLimit').value || 500;
+  document.querySelectorAll('#badgeLimitPrice, .limitValText').forEach(el => el.innerText = val);
 }
 
 function generateBundles() {
   const limit = parseFloat(document.getElementById('bundlePriceLimit').value) || 500;
-  const minPct = Math.min(100, Math.max(0, parseFloat(document.getElementById('bundleMinFill').value) || 0));
-  const minValue = limit * minPct / 100;
-  const maxPer = Math.max(0, parseInt(document.getElementById('bundleMaxPerProduct').value) || 0);
-  const seg = document.getElementById('bundleSegmentFilter').value;
-  const container = document.getElementById('bundlesResults');
+  const segFilter = document.getElementById('bundleSegmentFilter').value;
+  const minFill = parseFloat(document.getElementById('bundleMinFill').value) || 0;
+  const maxPerProd = parseInt(document.getElementById('bundleMaxPerProduct').value) || 0;
 
-  let pool = products
-    .filter(p => p.stock > 0 && adjPrice(p) <= limit)
-    .filter(p => seg === 'ALL' || p.segment === seg)
-    .map(p => ({ ...p, origPrice: p.price, price: adjPrice(p), availableStock: p.stock }));
+  const pool = products.filter(p => p.stock > 0 && (segFilter === 'ALL' || p.segment === segFilter)).map(p => ({
+    ...p,
+    effectivePrice: adjPrice(p),
+    availableStock: p.stock
+  })).filter(p => p.effectivePrice > 0);
+
+  const container = document.getElementById('bundlesResults');
+  container.innerHTML = '';
 
   if (pool.length === 0) {
-    container.innerHTML = `<div class="bg-white p-8 text-center rounded-2xl border border-gray-100">
-      <div class="text-3xl mb-2"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h4 class="font-bold text-gray-800">Nebyly nalezeny žádné vhodné položky</h4>
-      <p class="text-xs text-gray-500 mt-1">Sklad neobsahuje žádné produkty do výše částky ${limit} Kč.</p></div>`;
+    container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-gray-100 text-center text-gray-500 font-medium">Žádné položky skladem s cenou pro tvorbu balíčků. Nejdříve naskladněte zboží a nastavte ceny.</div>`;
     lastGeneratedBundles = [];
     return;
   }
 
-  const bundles = [];
-  let counter = 1;
-  while (true) {
-    const items = [];
-    let price = 0, added = false;
-    const perCode = {};
-    pool.sort((a, b) => b.price - a.price);
-    for (const item of pool) {
-      while (item.availableStock > 0 && (price + item.price) <= limit && (!maxPer || (perCode[item.code] || 0) < maxPer)) {
-        perCode[item.code] = (perCode[item.code] || 0) + 1;
-        price += item.price; item.availableStock -= 1; added = true;
-        const ex = items.find(b => b.id === item.id && b.location === item.location);
-        if (ex) ex.count += 1; else items.push({ ...item, count: 1 });
+  let bundles = [];
+  for (let i = 0; i < MAX_BUNDLES; i++) {
+    let currentBundle = [];
+    let currentSum = 0;
+    let attempts = 0;
+
+    let availablePool = pool.map(p => ({ ...p }));
+
+    while (attempts < 50 && currentSum < limit) {
+      attempts++;
+      const validCandidates = availablePool.filter(p => {
+        if (p.availableStock <= 0) return false;
+        if (maxPerProd > 0) {
+          const usedCount = currentBundle.filter(item => item.code === p.code).length;
+          if (usedCount >= maxPerProd) return false;
+        }
+        return (currentSum + p.effectivePrice) <= (limit * 1.15); // mírná tolerance
+      });
+
+      if (validCandidates.length === 0) break;
+      const candidate = validCandidates[Math.floor(Math.random() * validCandidates.length)];
+
+      currentBundle.push({ ...candidate, qty: 1 });
+      currentSum += candidate.effectivePrice;
+      candidate.availableStock--;
+    }
+
+    if (currentBundle.length > 0) {
+      const fillPercent = Math.round((currentSum / limit) * 100);
+      if (fillPercent >= minFill) {
+        bundles.push({ items: currentBundle, total: currentSum, fill: fillPercent });
       }
     }
-    if (!added || items.length === 0) break;
-    if (price + 1e-9 < minValue) break;
-    bundles.push({ id: counter++, items, totalPrice: price, remainingBudget: limit - price });
-    if (counter > MAX_BUNDLES) break;
   }
+
   lastGeneratedBundles = bundles;
 
   if (bundles.length === 0) {
-    container.innerHTML = `<div class="bg-white p-8 text-center rounded-2xl border border-gray-100"><h4 class="font-bold text-gray-800">Nelze vytvořit balíček</h4></div>`;
+    container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-gray-100 text-center text-gray-500 font-medium">Nepodařilo se sestavit žádné balíčky odpovídající zadaným kritériím.</div>`;
     return;
   }
 
-  container.innerHTML = `
-    <div class="flex items-center justify-between flex-wrap gap-3 no-print mb-3 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-      <p class="text-sm font-bold text-gray-700">Vygenerováno <span class="text-emerald-600 font-extrabold">${bundles.length}</span> balíčků do limitu ${limit} Kč</p>
-      <div class="flex items-center gap-2 flex-wrap">
-        <button onclick="exportAllBundlesExcel()" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2"><i class="fa-solid fa-file-excel"></i><span>Exportovat vše do Excelu</span></button>
-        <button onclick="printAllBundles()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 shadow-sm"><i class="fa-solid fa-print"></i><span>Tisknout všechny balíčky</span></button>
-      </div>
-    </div>`;
+  bundles.forEach((b, idx) => {
+    const div = document.createElement('div');
+    div.className = "printable-bundle bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4";
+    
+    let itemsHtml = b.items.map(item => `
+      <tr class="border-b border-gray-50">
+        <td class="py-2 px-3 font-mono text-xs font-bold text-gray-800">${escapeHtml(item.code)}</td>
+        <td class="py-2 px-3 font-medium text-gray-900">${escapeHtml(item.name)}</td>
+        <td class="py-2 px-3"><span class="bg-gray-100 px-2 py-0.5 rounded text-xs font-bold">${escapeHtml(item.location || 'Není')}</span></td>
+        <td class="py-2 px-3 text-center font-bold">1 ks</td>
+        <td class="py-2 px-3 text-right font-bold text-emerald-700">${item.effectivePrice.toLocaleString('cs-CZ', { minimumFractionDigits: 2 })} Kč</td>
+      </tr>
+    `).join('');
 
-  bundles.forEach(b => {
-    const rows = b.items.map(i => `
-      <tr class="border-b border-gray-100 text-xs">
-        <td class="py-2.5 px-3 font-mono font-bold text-gray-900">${escapeHtml(i.code)}</td>
-        <td class="py-2.5 px-3 font-bold text-gray-900">${escapeHtml(i.name)}</td>
-        <td class="py-2.5 px-3 font-mono font-bold text-brand-700"><i class="fa-solid fa-location-dot mr-1"></i> ${escapeHtml(i.location || 'Není')}</td>
-        <td class="py-2.5 px-3 text-center"><span class="bg-brand-100 text-brand-800 font-bold px-2 py-0.5 rounded text-xs">${i.count} ks</span></td>
-        <td class="py-2.5 px-3 text-right font-semibold text-gray-800">${(i.price * i.count).toFixed(2)} Kč</td>
-      </tr>`).join('');
-
-    const card = document.createElement('div');
-    card.className = "bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all printable-bundle mb-4";
-    card.dataset.bundleId = b.id;
-    card.innerHTML = `
-      <div class="flex items-center justify-between flex-wrap gap-3 pb-4 mb-4 border-b border-gray-100">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">#${b.id}</div>
-          <div>
-            <h4 class="font-bold text-gray-900 text-base">Skladový balíček #${b.id}</h4>
-            <p class="text-xs text-gray-400 font-medium">Picking list – přesné lokace pro skladníka</p>
-          </div>
+    div.innerHTML = `
+      <div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-gray-100">
+        <div>
+          <h4 class="text-base font-black text-gray-900 flex items-center gap-2"><i class="fa-solid fa-gift text-emerald-600"></i><span>Balíček #${idx + 1}</span></h4>
+          <p class="text-xs text-gray-500 font-medium mt-0.5">Celková vypočtená hodnota: <strong class="text-emerald-700">${b.total.toLocaleString('cs-CZ', { minimumFractionDigits: 2 })} Kč</strong> (${b.fill}% cílové částky)</p>
         </div>
-        <div class="flex items-center gap-4 flex-wrap">
-          <div class="text-right">
-            <div class="text-xl font-black text-emerald-600">${b.totalPrice.toFixed(2)} Kč</div>
-            <div class="text-[10px] text-gray-400 font-semibold">Zbylo do limitu: ${b.remainingBudget.toFixed(2)} Kč</div>
-          </div>
-          <div class="flex items-center gap-2 no-print">
-            <button onclick="exportSingleBundleExcel(${b.id})" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-file-excel"></i><span>Export Excel</span></button>
-            <button onclick="printSingleBundle(${b.id})" class="bg-gray-800 hover:bg-gray-900 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-print"></i><span>Tisk</span></button>
-          </div>
+        <div class="no-print flex items-center gap-2">
+          <button onclick="window.print()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"><i class="fa-solid fa-print"></i><span>Tisk / PDF</span></button>
         </div>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left">
-          <thead><tr class="bg-gray-50 text-[11px] font-bold text-gray-400 uppercase">
-            <th class="py-2 px-3">Kód</th><th class="py-2 px-3">Produkt</th><th class="py-2 px-3">Lokace ve skladu</th><th class="py-2 px-3 text-center">Množství</th><th class="py-2 px-3 text-right">Cena celkem</th>
-          </tr></thead>
-          <tbody>${rows}</tbody>
+        <table class="w-full text-left text-sm">
+          <thead>
+            <tr class="text-[11px] font-bold text-gray-400 uppercase border-b border-gray-100">
+              <th class="py-2 px-3">Kód</th>
+              <th class="py-2 px-3">Položka</th>
+              <th class="py-2 px-3">Lokace</th>
+              <th class="py-2 px-3 text-center">Množství</th>
+              <th class="py-2 px-3 text-right">Cena</th>
+            </tr>
+          </thead>
+          <tbody>${itemsHtml}</tbody>
         </table>
-      </div>`;
-    container.appendChild(card);
+      </div>
+    `;
+    container.appendChild(div);
   });
-}
-
-function printAllBundles() {
-  const cards = document.querySelectorAll('.printable-bundle');
-  cards.forEach(c => c.classList.remove('no-print'));
-  window.print();
-}
-
-function printSingleBundle(id) {
-  const cards = document.querySelectorAll('.printable-bundle');
-  cards.forEach(c => {
-    if (c.dataset.bundleId === String(id)) {
-      c.classList.remove('no-print');
-    } else {
-      c.classList.add('no-print');
-    }
-  });
-  window.print();
-  setTimeout(() => cards.forEach(c => c.classList.remove('no-print')), 500);
-}
-
-function bundleRows(b, label) {
-  return b.items.map(i => ({
-    'ID Balíčku': label, 'Kód produktu': i.code, 'Název produktu': i.name, 'Lokace ve skladu': i.location,
-    'Počet kusů': i.count, [`Jedn. cena ${PRICE_PERCENT} % (Kč)`]: i.price, 'Původní cena (Kč)': i.origPrice, 'Celkem (Kč)': (i.price * i.count).toFixed(2)
-  }));
-}
-
-function exportSingleBundleExcel(id) {
-  const b = lastGeneratedBundles.find(x => x.id === id);
-  if (!b) return;
-  const ws = XLSX.utils.json_to_sheet(bundleRows(b, `#${b.id}`));
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, `Balíček ${b.id}`);
-  XLSX.writeFile(wb, `Balicek_${b.id}_PickingList.xlsx`);
-  showToast(`Balíček #${b.id} byl exportován do Excelu`);
-}
-
-function exportAllBundlesExcel() {
-  if (!lastGeneratedBundles.length) return;
-  const all = lastGeneratedBundles.flatMap(b => bundleRows(b, `Balíček #${b.id}`));
-  const ws = XLSX.utils.json_to_sheet(all);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Všechny balíčky");
-  XLSX.writeFile(wb, "Vsechny_Balicky_PickingListy.xlsx");
-  showToast("Všechny balíčky byly exportovány do Excelu");
 }
 
 function exportToExcel() {
-  const data = products.map(p => ({ 'Produkt': p.code, 'Popis a SEO prefix': p.name, 'Lokace': p.location, 'Skladová cena': p.price, [`Cena ${PRICE_PERCENT} %`]: adjPrice(p), 'Na lokaci': p.stock, 'Segment': p.segment }));
+  if (products.length === 0) { alert("Sklad je prázdný, není co exportovat."); return; }
+  const data = products.map(p => ({
+    'Kód produktu': p.code,
+    'Název produktu': p.name,
+    'Segment': p.segment,
+    'Lokace': p.location,
+    'Jednotková cena (Kč)': p.price,
+    'Skladem (ks)': p.stock,
+    'Celková hodnota (Kč)': p.price * p.stock
+  }));
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Sklad");
-  XLSX.writeFile(wb, "Sklad_Zasoby.xlsx");
+  XLSX.writeFile(wb, "sklad_export.xlsx");
   showToast("Export proběhl úspěšně");
 }
 
@@ -784,12 +704,12 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   document.getElementById('toastMessage').innerText = msg;
   t.classList.remove('translate-y-20', 'opacity-0');
-  setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+  setTimeout(() => { t.classList.add('translate-y-20', 'opacity-0'); }, 3000);
 }
 
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  return str.toString().replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#039;');
 }
 </script>
 </body>
